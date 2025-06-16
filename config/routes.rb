@@ -7,4 +7,13 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  resources :lists do
+    # it's a nested resource because bookmarks belong to lists
+    # this means that the URL will be /lists/:list_id/bookmarks/new
+    resources :bookmarks, only: [:new, :create]
+  end
+  # destroy is not nested because we want to be able to delete bookmarks without needing to know the list they belong to
+  resources :bookmarks, only: [:destroy]
+
+  resources :movies, only: [:destroy]
 end
