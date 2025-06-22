@@ -8,28 +8,38 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-require "json"
 require "open-uri"
+require "json"
+
 puts "Cleaning up database..."
+
+# Destroy bookmarks first to avoid foreign key issues
+Bookmark.destroy_all
+List.destroy_all
 Movie.destroy_all
+
 puts "Database cleaned"
 
 puts "Seeding movies from TMDB..."
 
 url = "https://tmdb.lewagon.com/movie/top_rated"
-movies_serialized = URI.open(url).read
-movies = JSON.parse(movies_serialized)
+base_poster_url = "https://image.tmdb.org/t/p/original"
 
-movies["results"].first(10).each do |movie|
-  Movie.create!(
-    title: movie["title"],
-    overview: movie["overview"],
-    poster_url: "https://image.tmdb.org/t/p/original#{movie["poster_path"]}",
-    rating: movie["vote_average"]
-  )
+10.times do |i|
+  puts "Importing movies from page #{i + 1}"
+  movies = JSON.parse(URI.open("#{url}?page=#{i + 1}").read)["results"]
+  movies.each do |movie|
+    puts "Creating #{movie["title"]}"
+    Movie.create!(
+      title: movie["title"],
+      overview: movie["overview"],
+      poster_url: "#{base_poster_url}#{movie["backdrop_path"] || movie["poster_path"]}",
+      rating: movie["vote_average"]
+    )
+  end
 end
 
-puts "Movies created!"
+puts "🎉 Movies created!"
 
 List.create!(
   name: 'Avatar',

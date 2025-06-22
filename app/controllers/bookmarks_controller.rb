@@ -1,11 +1,14 @@
 class BookmarksController < ApplicationController
+  # set_bookmark: runs before destroy, so we can find the bookmark we're trying to delete
+  before_action :set_bookmark, only: :destroy
+  # set_list: runs before new and create, to load the correct list for the form or the newly created bookmark
+  before_action :set_list, only: [:new, :create]
+
   def new
-    @list = List.find(params[:list_id])
     @bookmark = Bookmark.new
   end
 
   def create
-    @list = List.find(params[:list_id])
     @bookmark = Bookmark.new(bookmark_params)
     @bookmark.list = @list
     if @bookmark.save
@@ -16,7 +19,6 @@ class BookmarksController < ApplicationController
   end
 
   def destroy
-    @bookmark = Bookmark.find(params[:id])
     @bookmark.destroy
     redirect_to list_path(@bookmark.list), notice: "Bookmark was successfully deleted."
   end
@@ -25,5 +27,13 @@ class BookmarksController < ApplicationController
 
   def bookmark_params
     params.require(:bookmark).permit(:movie_id, :comment)
+  end
+
+  def set_bookmark
+    @bookmark = Bookmark.find(params[:id])
+  end
+
+  def set_list
+    @list = List.find(params[:list_id])
   end
 end

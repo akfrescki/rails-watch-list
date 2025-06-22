@@ -1,7 +1,17 @@
-<h1>Create a New List</h1>
+<div class="container py-5">
+  <div class="row">
+    <div class="col-12 col-md-6 offset-lg-3">
+      <div class="bg-white rounded p-4 shadow">
+        <h3 class="mb-4">Create a New List</h3>
 
-<%= simple_form_for @list do |f| %>
-  <%= f.input :name %>
-  <%= f.button :submit, "Save", class: "btn btn-success" %>
-<% end %>
-<%= link_to "⬅ Go Back to All Lists", root_path, class: "btn btn-outline-dark mt-3" %>
+        <%= simple_form_for @list, html: { multipart: true, data: { turbo: false } } do |f| %>
+          <%= f.input :name, placeholder: "Drama" %>
+          <%= f.input :photo, as: :file, label: "Upload a banner image" %>
+          <%= f.button :submit, "Save", class: "btn btn-success" %>
+        <% end %>
+
+        <%= link_to "⬅ Go Back to All Lists", root_path, class: "btn btn-outline-dark mt-3" %>
+      </div>
+    </div>
+  </div>
+</div>
